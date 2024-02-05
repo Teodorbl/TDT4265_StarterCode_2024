@@ -55,7 +55,11 @@ class BinaryModel:
             y: output of model with shape [batch size, 1]
         """
         # TODO implement this function (Task 2a)
-        return None
+        
+        pre_activation = X @ self.w # column vector: [batch size, 1]
+        post_activation = 1 / ( 1 + np.exp( -pre_activation ) ) # column vector: [batch size, 1]
+
+        return post_activation
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
         """
