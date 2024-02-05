@@ -18,10 +18,15 @@ def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: BinaryModel) -
     # TODO Implement this function (Task 2c)
 
     output = model.forward(X)
-    output_rounded = [1 if y >= 0.5 else 0 for y in output]
+    output_rounded = [ 1 if y >= 0.5 else 0 for y in output ]
 
-    n_correct = np.sum(output_rounded == targets)
-    accuracy = n_correct / X.shape[0]
+    N = X.shape[0]
+    n_correct = 0
+
+    for n in range(N):
+        if output_rounded[n] == targets[n]: n_correct += 1
+
+    accuracy = n_correct / N
 
     return accuracy
 
