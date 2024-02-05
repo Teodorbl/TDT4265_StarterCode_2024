@@ -36,7 +36,9 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray) -> float:
     assert targets.shape == outputs.shape,\
         f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
     
-
+    N = targets.size[0]
+    C_vec = targets * np.log(outputs) + (1-outputs) * np.log(1-outputs)
+    C = -1 / N * np.sum(C_vec)
 
     return 0
 
