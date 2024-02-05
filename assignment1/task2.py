@@ -16,7 +16,13 @@ def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: BinaryModel) -
         Accuracy (float)
     """
     # TODO Implement this function (Task 2c)
-    accuracy = 0.0
+
+    output = model.forward(X)
+    output_rounded = [1 if y >= 0.5 else 0 for y in output]
+
+    n_correct = np.sum(output_rounded == targets)
+    accuracy = n_correct / X.shape[0]
+
     return accuracy
 
 
