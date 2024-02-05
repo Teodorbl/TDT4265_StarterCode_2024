@@ -46,7 +46,6 @@ class LogisticTrainer(BaseTrainer):
             loss value (float) on batch
         """
         # TODO: Implement this function (task 2b)
-        loss = 0
 
         # Forward pass on all samples in batch
         output = self.model.forward(X_batch)
@@ -57,6 +56,9 @@ class LogisticTrainer(BaseTrainer):
         # Gradient update step
         self.model.w -= self.learning_rate * self.model.grad
 
+        # Compute loss
+        loss = cross_entropy_loss(Y_batch, output)
+    
         return loss
 
     def validation_step(self):
