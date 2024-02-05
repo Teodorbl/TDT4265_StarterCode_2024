@@ -2,6 +2,7 @@ from typing import Generator
 import mnist
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 
 def batch_loader(
@@ -11,7 +12,7 @@ def batch_loader(
     """
     Creates a batch generator over the whole dataset (X, Y) which returns a generator iterating over all the batches.
     This function is called once each epoch.
-    Often drop_last is set to True for the train dataset, but not for the train set.
+    Often drop_last is set to True for the train dataset, but not for the train set. # ???
     Args:
         X: images of shape [batch size, 784] in the range (0, 255)
         Y: labels of shape [batch size]
@@ -25,8 +26,13 @@ def batch_loader(
     indices = list(range(len(X)))
 
     # TODO (task 2e) implement dataset shuffling here.
+    
+    iter_range = list(range(num_batches))
 
-    for i in range(num_batches):
+    if shuffle:
+        random.shuffle(iter_range)
+
+    for i in iter_range:
         # select a set of indices for each batch of samples
         batch_indices = indices[i*batch_size:(i+1)*batch_size]
         x = X[batch_indices]
