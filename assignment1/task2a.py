@@ -13,6 +13,7 @@ def pre_process_images(X: np.ndarray):
     assert X.shape[1] == 784,\
         f"X.shape[1]: {X.shape[1]}, should be 784"
     # TODO implement this function (Task 2a)
+    # DONE
     
     # Add entry: 1 to the end of each input vector (bias trick)
     X = np.append(X, np.ones((X.shape[0], 1)), axis=1)
@@ -33,11 +34,12 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray) -> float:
         Cross entropy error (float)
     """
     # TODO implement this function (Task 2a)
+    # DONE
     assert targets.shape == outputs.shape,\
         f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
     
     N = targets.size
-    C_vec = targets * np.log(outputs) + (1-outputs) * np.log(1-outputs)
+    C_vec = targets * np.log(outputs) + (1-targets) * np.log(1-outputs)
     C = -1 / N * np.sum(C_vec)
 
     return C
@@ -59,6 +61,7 @@ class BinaryModel:
             y: output of model with shape [batch size, 1]
         """
         # TODO implement this function (Task 2a)
+        # DONE
         
         pre_activation = X @ self.w # column vector: [batch size, 1]
         post_activation = 1 / ( 1 + np.exp( -pre_activation ) ) # column vector: [batch size, 1]
@@ -74,6 +77,7 @@ class BinaryModel:
             targets: labels/targets of each image of shape: [batch size, 1]
         """
         # TODO implement this function (Task 2a)
+        # DONE
         assert targets.shape == outputs.shape,\
             f"Output shape: {outputs.shape}, targets: {targets.shape}"
         
