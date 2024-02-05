@@ -13,6 +13,15 @@ def pre_process_images(X: np.ndarray):
     assert X.shape[1] == 784,\
         f"X.shape[1]: {X.shape[1]}, should be 784"
     # TODO implement this function (Task 2a)
+    # DONE
+    
+    # Add entry: 1 to the end of each input vector (bias trick)
+    X = np.append(X, np.ones((X.shape[0], 1)), axis=1)
+
+    # Normalize entries of each row to [-1, 1]
+    X = (X - np.min(X, axis=1, keepdims=True)) / (np.max(X, axis=1, keepdims=True) - np.min(X, axis=1, keepdims=True))
+    X = 2*X - 1
+
     return X
 
 
