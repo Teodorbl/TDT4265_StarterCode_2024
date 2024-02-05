@@ -36,7 +36,7 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray) -> float:
     assert targets.shape == outputs.shape,\
         f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
     
-    N = targets.size[0]
+    N = targets.size
     C_vec = targets * np.log(outputs) + (1-outputs) * np.log(1-outputs)
     C = -1 / N * np.sum(C_vec)
 
@@ -47,7 +47,7 @@ class BinaryModel:
 
     def __init__(self):
         # Define number of input nodes
-        self.I = None
+        self.I = 785 # Edited
         self.w = np.zeros((self.I, 1))
         self.grad = None
 
@@ -82,7 +82,7 @@ class BinaryModel:
         assert self.grad.shape == self.w.shape,\
             f"Grad shape: {self.grad.shape}, w: {self.w.shape}"
         
-        N = X.size[0]
+        N = X.shape[0]
         self.grad = -1 / N * X.T @ (targets - outputs)
 
     def zero_grad(self) -> None:
