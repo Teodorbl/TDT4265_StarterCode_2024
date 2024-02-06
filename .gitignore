@@ -2,7 +2,7 @@
 assignment1/data/*
 data/*
 test.*
-*.png
+# *.png
 
 ### macOS ###
 # General
