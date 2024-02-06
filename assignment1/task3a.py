@@ -51,7 +51,7 @@ class SoftmaxModel:
         post_activation = np.array( 
             [ np.exp(row) / row_sums[i] for i, row in enumerate(pre_activation) ]
         )
-        
+
         return post_activation
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
@@ -71,6 +71,9 @@ class SoftmaxModel:
         self.grad = np.zeros_like(self.w)
         assert self.grad.shape == self.w.shape,\
             f"Grad shape: {self.grad.shape}, w: {self.w.shape}"
+                
+        N = X.shape[0]
+        self.grad = -1 / N * X.T @ (targets - outputs)
 
     def zero_grad(self) -> None:
         self.grad = None
