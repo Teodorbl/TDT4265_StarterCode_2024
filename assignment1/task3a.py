@@ -31,7 +31,7 @@ class SoftmaxModel:
         self.I = 785 # Edited
 
         # Define number of output nodes
-        self.num_outputs = None
+        self.num_outputs = 10 # Edited
         self.w = np.zeros((self.I, self.num_outputs))
         self.grad = None
 
