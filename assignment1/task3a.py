@@ -22,7 +22,7 @@ class SoftmaxModel:
 
     def __init__(self, l2_reg_lambda: float):
         # Define number of input nodes
-        self.I = None
+        self.I = 785 # Edited
 
         # Define number of output nodes
         self.num_outputs = None
@@ -39,7 +39,20 @@ class SoftmaxModel:
             y: output of model with shape [batch size, num_outputs]
         """
         # TODO implement this function (Task 3a)
-        return None
+        
+        pre_activation = X @ self.w     # [batch size, num_outputs]
+
+        # Denominator in the post activation rows
+        row_sums = np.array(
+            [ np.sum( np.exp(row) ) for row in pre_activation ]
+        )
+
+        # [batch size, num_outputs]
+        post_activation = np.array( 
+            [ np.exp(row) / row_sums[i] for i, row in enumerate(pre_activation) ]
+        )
+        
+        return post_activation
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
         """
