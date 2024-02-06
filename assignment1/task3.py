@@ -21,7 +21,7 @@ def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: SoftmaxModel) 
     output = model.forward(X)
 
     # Turn output into one hot encoded prediction
-    max_indices = np.max(output, axis=1)
+    max_indices = np.argmax(output, axis=1)
     pred = np.zeros_like(output)
 
     for id, row in zip(max_indices, pred):
