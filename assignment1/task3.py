@@ -150,39 +150,55 @@ def main():
 
     # Train a model with L2 regularization (task 4b)
 
-    model1 = SoftmaxModel(l2_reg_lambda=0.0)
-    trainer = SoftmaxTrainer(
-        model1, learning_rate, batch_size, shuffle_dataset,
-        X_train, Y_train, X_val, Y_val,
-    )
-    train_history_reg01, val_history_reg01 = trainer.train(num_epochs)
+    # model1 = SoftmaxModel(l2_reg_lambda=0.0)
+    # trainer = SoftmaxTrainer(
+    #     model1, learning_rate, batch_size, shuffle_dataset,
+    #     X_train, Y_train, X_val, Y_val,
+    # )
+    # train_history_reg01, val_history_reg01 = trainer.train(num_epochs)
 
 
-    model2 = SoftmaxModel(l2_reg_lambda=1.0)
-    trainer = SoftmaxTrainer(
-        model2, learning_rate, batch_size, shuffle_dataset,
-        X_train, Y_train, X_val, Y_val,
-    )
-    train_history_reg02, val_history_reg02 = trainer.train(num_epochs)
+    # model2 = SoftmaxModel(l2_reg_lambda=1.0)
+    # trainer = SoftmaxTrainer(
+    #     model2, learning_rate, batch_size, shuffle_dataset,
+    #     X_train, Y_train, X_val, Y_val,
+    # )
+    # train_history_reg02, val_history_reg02 = trainer.train(num_epochs)
     
-    # Plotting of weights for each digit (task 4b)
-    digit_weight_model1 = model1.w[1:, :].reshape(28, 28, 10)
-    digit_weight_model2 = model2.w[1:, :].reshape(28, 28, 10)
+    # # Plotting of weights for each digit (task 4b)
+    # digit_weight_model1 = model1.w[1:, :].reshape(28, 28, 10)
+    # digit_weight_model2 = model2.w[1:, :].reshape(28, 28, 10)
 
-    fig, axs = plt.subplots(2, 10, figsize=(10, 2))
-    for i in range(10):
-        axs[0, i].imshow(digit_weight_model1[:, :, i], cmap='gray')
-        axs[0, i].axis('off')
-        axs[1, i].imshow(digit_weight_model2[:, :, i], cmap='gray')
-        axs[1, i].axis('off')
+    # fig, axs = plt.subplots(2, 10, figsize=(10, 2))
+    # for i in range(10):
+    #     axs[0, i].imshow(digit_weight_model1[:, :, i], cmap='gray')
+    #     axs[0, i].axis('off')
+    #     axs[1, i].imshow(digit_weight_model2[:, :, i], cmap='gray')
+    #     axs[1, i].axis('off')
 
-    plt.subplots_adjust(wspace=0, hspace=0)
-    plt.savefig("task4b_softmax_weight.png")
+    # plt.subplots_adjust(wspace=0, hspace=0)
+    # plt.savefig("task4b_softmax_weight.png")
     
 
     # Plotting of accuracy for difference values of lambdas (task 4c)
     l2_lambdas = [1, .1, .01, .001]
+
+    plt.ylim([0.73, .93])
+
+    for lamda in l2_lambdas:
+        model = SoftmaxModel(l2_reg_lambda=lamda)
+        trainer = SoftmaxTrainer(
+            model, learning_rate, batch_size, shuffle_dataset,
+            X_train, Y_train, X_val, Y_val,
+        )
+        _, val_history = trainer.train(num_epochs)
+        utils.plot_loss(val_history["accuracy"], f"Validation Accuracy with lambda = {lamda}")
+    
+    plt.xlabel("Number of Training Steps")
+    plt.ylabel("Accuracy")
+    plt.legend()
     plt.savefig("task4c_l2_reg_accuracy.png")
+    plt.show()
 
     # Task 4d - Plotting of the l2 norm for each weight
 
