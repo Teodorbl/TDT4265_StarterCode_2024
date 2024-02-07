@@ -182,7 +182,7 @@ def main():
 
     # Plotting of accuracy for difference values of lambdas (task 4c)
     l2_lambdas = [1, .1, .01, .001]
-
+    l2_norms = []
     plt.ylim([0.73, .93])
 
     for lamda in l2_lambdas:
@@ -192,6 +192,7 @@ def main():
             X_train, Y_train, X_val, Y_val,
         )
         _, val_history = trainer.train(num_epochs)
+        l2_norms.append(np.linalg.norm(model.w))
         utils.plot_loss(val_history["accuracy"], f"Validation Accuracy with lambda = {lamda}")
     
     plt.xlabel("Number of Training Steps")
@@ -201,8 +202,12 @@ def main():
     plt.show()
 
     # Task 4d - Plotting of the l2 norm for each weight
-
+    plt.xlabel("Lambda")
+    plt.ylabel("L2 Norm")
+    plt.xscale('log')
+    plt.plot(l2_lambdas, l2_norms, 'o-')
     plt.savefig("task4d_l2_reg_norms.png")
+    plt.show()
 
 
 if __name__ == "__main__":
