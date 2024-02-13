@@ -42,8 +42,8 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
     assert targets.shape == outputs.shape,\
         f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
     
-    N = targets.size
-    C_vec = targets * np.log(outputs) + (1-targets) * np.log(1-outputs)
+    N = targets.shape[0]
+    C_vec = np.sum( targets * np.log(outputs), axis=1 )
     C = -1 / N * np.sum(C_vec)
 
     return C
@@ -93,6 +93,17 @@ class SoftmaxModel:
             sigmoid activation of input
         """
         return 1 / (1 + np.exp(-z))
+    
+    # Added:
+    def sigmoid_derivative(self, z: np.ndarray) -> np.ndarray:
+        """
+        Args:
+            z: input of shape [num_outputs, batch size]
+        Returns:
+            derivative of sigmoid activation of input
+        """
+        sigmoid_z = self.sigmoid(z)
+        return sigmoid_z * (1 - sigmoid_z)
     
     # Added:
     def softmax(self, z: np.ndarray) -> np.ndarray:
@@ -148,7 +159,23 @@ class SoftmaxModel:
         ), f"Output shape: {outputs.shape}, targets: {targets.shape}"
         # A list of gradients.
         # For example, self.grads[0] will be the gradient for the first hidden layer
-        self.grads = []
+
+        N = X.shape[0]
+        x = X.T                 # [I+1, N]
+        W_o = self.ws[1].T      # [K, J+1]
+        W_o_tilde = W_o[:, :-1] # [K, J]
+        y_hat = outputs.T       # [K, N]
+        y = targets.T           # [K, N]
+
+        Delta_o = y_hat - y     # [K, N]
+        Delta_h = (W_o_tilde.T @ Delta_o) * self.sigmoid_derivative(self.z_h)   # [J, N]
+
+        grad_o = 1/N * Delta_o @ self.a_h.T   # [K, J+1]
+        grad_h = 1/N * Delta_h @ x.T          # [J, I+1]
+
+        self.grads[0] = grad_h.T
+        self.grads[1] = grad_o.T
+
         for grad, w in zip(self.grads, self.ws):
             assert (
                 grad.shape == w.shape
