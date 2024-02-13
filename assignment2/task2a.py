@@ -14,6 +14,20 @@ def pre_process_images(X: np.ndarray):
     """
     assert X.shape[1] == 784, f"X.shape[1]: {X.shape[1]}, should be 784"
     # TODO implement this function (Task 2a)
+
+    u = 33.55274553571429
+    s = 78.87550070784701
+
+    print("Using values from train set:")
+    print("Mean: ", u)
+    print("Standard deviation: ", s, "\n")
+
+    # Input normalization
+    X = (X - u) / s    
+
+    # Bias trick: Add  1 to the end of each input vector
+    X = np.append(X, np.ones((X.shape[0], 1)), axis=1)    
+
     return X
 
 
