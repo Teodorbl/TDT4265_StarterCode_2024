@@ -63,7 +63,7 @@ class SoftmaxModel:
             1
         )  # Always reset random seed before weight init to get comparable results.
         # Define number of input nodes
-        self.I = None
+        self.I = 784 # Edited
         self.use_improved_sigmoid = use_improved_sigmoid
         self.use_relu = use_relu
         self.use_improved_weight_init = use_improved_weight_init
@@ -77,12 +77,35 @@ class SoftmaxModel:
         self.ws = []
         prev = self.I
         for size in self.neurons_per_layer:
-            w_shape = (prev, size)
+            w_shape = (prev + 1, size) # Edited for bias trick
             print("Initializing weight to shape:", w_shape)
             w = np.zeros(w_shape)
             self.ws.append(w)
             prev = size
         self.grads = [None for i in range(len(self.ws))]
+
+    # Added:
+    def sigmoid(self, z: np.ndarray) -> np.ndarray:
+        """
+        Args:
+            z: input of shape [num_outputs, batch size]
+        Returns:
+            sigmoid activation of input
+        """
+        return 1 / (1 + np.exp(-z))
+    
+    # Added:
+    def softmax(self, z: np.ndarray) -> np.ndarray:
+        """
+        Args:
+            z: input of shape [num_outputs, batch size]
+        Returns:
+            softmax activation of input
+        """
+        # Subtract max for numerical stability
+        z -= np.max(z, axis=0, keepdims=True)
+        exps = np.exp(z)
+        return exps / np.sum(exps, axis=0, keepdims=True)
 
     def forward(self, X: np.ndarray) -> np.ndarray:
         """
@@ -94,7 +117,21 @@ class SoftmaxModel:
         # TODO implement this function (Task 2b)
         # HINT: For performing the backward pass, you can save intermediate activations in variables in the forward pass.
         # such as self.hidden_layer_output = ...
-        return None
+        
+        # Transpose matrices to follow standard convention for matrix dimensions in neural networks
+        # Its slow, I know
+        x = X.T                 # [I+1, N]
+        W_h = self.ws[0].T      # [J, I+1]
+        W_o = self.ws[1].T      # [K, J+1]
+
+        # Pre- and post-activations
+        self.z_h = W_h @ x                  # [J, N]
+        self.a_h = self.sigmoid(self.z_h)   # [J, N]
+        self.a_h = np.append(self.a_h, np.ones((1, self.a_h.shape[1])), axis=0)  # [J+1, N] Bias trick
+        z_o = W_o @ self.a_h                # [K, N]
+        y_hat = self.softmax(z_o)           # [K, N]
+
+        return y_hat.T
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
         """
