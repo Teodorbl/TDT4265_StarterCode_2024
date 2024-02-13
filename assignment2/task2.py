@@ -19,7 +19,25 @@ def calculate_accuracy(
         Accuracy (float)
     """
     # TODO: Implement this function (copy from last assignment)
-    accuracy = 0
+    
+    output = model.forward(X)
+
+    # Turn output into one hot encoded prediction
+    max_indices = np.argmax(output, axis=1)
+    pred = np.zeros_like(output)
+
+    for id, row in zip(max_indices, pred):
+        row[ id ] = 1
+    
+    N = X.shape[0]
+    n_correct = 0 
+
+    # Compare results
+    for pred_row, target_row in zip(pred, targets):
+        if np.array_equal(pred_row, target_row): n_correct += 1
+
+    accuracy = n_correct / N
+
     return accuracy
 
 
@@ -53,6 +71,24 @@ class SoftmaxTrainer(BaseTrainer):
         """
         # TODO: Implement this function (task 2c)
 
+        # Forward pass on all samples in batch
+        output = self.model.forward(X_batch)
+        
+        # Backward pass to find gradient
+        self.model.backward(X_batch, output, Y_batch)
+        
+        # Gradient update step
+        self.model.ws[0] -= self.learning_rate * self.model.grads[0]
+        self.model.ws[1] -= self.learning_rate * self.model.grads[1]
+
+        # Compute loss
+        loss = cross_entropy_loss(Y_batch, output)
+    
+        return loss
+
+
+        # Code from project:
+        """
         loss = 0
 
             self.model.ws[layer_idx] = (
@@ -60,6 +96,7 @@ class SoftmaxTrainer(BaseTrainer):
         loss=cross_entropy_loss(Y_batch, logits)  # sol
 
         return loss
+        """
 
     def validation_step(self):
         """

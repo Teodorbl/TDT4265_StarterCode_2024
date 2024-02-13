@@ -79,7 +79,7 @@ class SoftmaxModel:
         for size in self.neurons_per_layer:
             w_shape = (prev + 1, size) # Edited for bias trick
             print("Initializing weight to shape:", w_shape)
-            w = np.zeros(w_shape)
+            w = np.random.uniform(-1, 1, w_shape) # Edited for weight initialization
             self.ws.append(w)
             prev = size
         self.grads = [None for i in range(len(self.ws))]
@@ -170,11 +170,11 @@ class SoftmaxModel:
         Delta_o = y_hat - y     # [K, N]
         Delta_h = (W_o_tilde.T @ Delta_o) * self.sigmoid_derivative(self.z_h)   # [J, N]
 
-        grad_o = 1/N * Delta_o @ self.a_h.T   # [K, J+1]
-        grad_h = 1/N * Delta_h @ x.T          # [J, I+1]
+        grad_o = 1/N * Delta_o @ self.a_h.T     # [K, J+1]
+        grad_h = 1/N * Delta_h @ x.T            # [J, I+1]
 
-        self.grads[0] = grad_h.T
-        self.grads[1] = grad_o.T
+        self.grads[0] = grad_h.T                # [I+1, J]
+        self.grads[1] = grad_o.T                # [J+1, K]
 
         for grad, w in zip(self.grads, self.ws):
             assert (

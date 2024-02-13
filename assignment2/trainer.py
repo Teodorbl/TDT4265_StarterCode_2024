@@ -76,7 +76,7 @@ class BaseTrainer:
         stop_counter = 0
         stop_flag = False
         min_val_loss = float("Inf")
-        best_weights = self.model.w
+        best_weights = self.model.ws
 
         for epoch in range(num_epochs):
             train_loader = utils.batch_loader(
@@ -100,12 +100,12 @@ class BaseTrainer:
                     else:
                         stop_counter = 0
                         min_val_loss = val_loss
-                        best_weights = self.model.w
+                        best_weights = self.model.ws
                     
                     # Early stop
                     if stop_counter >= 50:
                         print("Stopped early at epoch: ", epoch)
-                        self.model.w = best_weights
+                        self.model.ws = best_weights
                         stop_flag = True
                         break
 
