@@ -80,10 +80,18 @@ class SoftmaxTrainer(BaseTrainer):
         # Gradient update step
         self.model.ws[0] -= self.learning_rate * self.model.grads[0]
         self.model.ws[1] -= self.learning_rate * self.model.grads[1]
+        
+        # Add momentum term to update step
+        if self.use_momentum:
+            self.model.ws[0] -= self.learning_rate * self.momentum_gamma * self.previous_grads[0]
+            self.model.ws[1] -= self.learning_rate * self.momentum_gamma * self.previous_grads[1]
+
+            # Update previous gradients
+            self.previous_grads[0] = self.model.grads[0]
+            self.previous_grads[1] = self.model.grads[1]
 
         # Compute loss
         loss = cross_entropy_loss(Y_batch, output)
-    
         return loss
 
 
@@ -123,7 +131,7 @@ class SoftmaxTrainer(BaseTrainer):
 def main():
     # hyperparameters DO NOT CHANGE IF NOT SPECIFIED IN ASSIGNMENT TEXT
     num_epochs=50
-    learning_rate=0.1
+    learning_rate=0.02 # Changed from 0.1 when using momentum
     batch_size=32
     neurons_per_layer=[64, 10]
     momentum_gamma=0.9  # Task 3 hyperparameter
@@ -132,7 +140,7 @@ def main():
     # Settings for task 2 and 3. Keep all to false for task 2.
     use_improved_sigmoid=True
     use_improved_weight_init=True
-    use_momentum=False
+    use_momentum=True
     use_relu=False
 
     # Load dataset
@@ -189,7 +197,7 @@ def main():
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Accuracy")
     plt.legend()
-    plt.savefig("task3b_train_loss.png")
+    plt.savefig("task3c_train_loss.png")
     plt.show()
 
 
