@@ -79,7 +79,13 @@ class SoftmaxModel:
         for size in self.neurons_per_layer:
             w_shape = (prev + 1, size) # Edited for bias trick
             print("Initializing weight to shape:", w_shape)
-            w = np.random.uniform(-1, 1, w_shape) # Edited for weight initialization
+
+            # Edited for weight initialization:
+            if self.use_improved_weight_init:
+                w = np.random.normal(0, 1/np.sqrt(prev), w_shape)
+            else:
+                w = np.random.uniform(-1, 1, w_shape)
+
             self.ws.append(w)
             prev = size
         self.grads = [None for i in range(len(self.ws))]
@@ -92,6 +98,9 @@ class SoftmaxModel:
         Returns:
             sigmoid activation of input
         """
+        if self.use_improved_sigmoid:
+            return self.improved_sig(z)
+
         return 1 / (1 + np.exp(-z))
     
     # Added:
@@ -102,8 +111,32 @@ class SoftmaxModel:
         Returns:
             derivative of sigmoid activation of input
         """
+        if self.use_improved_sigmoid:
+            return self.improved_sig_derivative(z)
+
         sigmoid_z = self.sigmoid(z)
         return sigmoid_z * (1 - sigmoid_z)
+    
+    # Added:
+    def improved_sig(self, z: np.ndarray) -> np.ndarray:
+        """
+        Args:
+            z: input of shape [num_outputs, batch size]
+        Returns:
+            improved sigmoid activation function of input
+        """
+        return 1.7159 * np.tanh(2/3 * z)
+
+    # Added:
+    def improved_sig_derivative(self, z: np.ndarray) -> np.ndarray:
+        """
+        Args:
+            z: input of shape [num_outputs, batch size]
+        Returns:
+            derivative of improved sigmoid activation function of input
+        """
+        sech_square = 1/ np.cosh(2/3 * z)**2
+        return 1.14393 * sech_square
     
     # Added:
     def softmax(self, z: np.ndarray) -> np.ndarray:

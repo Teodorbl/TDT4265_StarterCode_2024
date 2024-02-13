@@ -130,8 +130,8 @@ def main():
     shuffle_data=True
 
     # Settings for task 2 and 3. Keep all to false for task 2.
-    use_improved_sigmoid=False
-    use_improved_weight_init=False
+    use_improved_sigmoid=True
+    use_improved_weight_init=True
     use_momentum=False
     use_relu=False
 
@@ -189,7 +189,7 @@ def main():
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Accuracy")
     plt.legend()
-    plt.savefig("task2c_train_loss.png")
+    plt.savefig("task3b_train_loss.png")
     plt.show()
 
 
