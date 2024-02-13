@@ -73,6 +73,11 @@ class BaseTrainer:
         )
 
         global_step = 0
+        stop_counter = 0
+        stop_flag = False
+        min_val_loss = float("Inf")
+        best_weights = self.model.w
+
         for epoch in range(num_epochs):
             train_loader = utils.batch_loader(
                 self.X_train, self.Y_train, self.batch_size, shuffle=self.shuffle_dataset)
@@ -88,5 +93,26 @@ class BaseTrainer:
                     val_history["loss"][global_step] = val_loss
                     val_history["accuracy"][global_step] = accuracy_val
                     # TODO: Implement early stopping (copy from last assignment)
+                    
+                    # If val loss does not improve
+                    if val_loss >= min_val_loss:
+                        stop_counter += 1
+                    else:
+                        stop_counter = 0
+                        min_val_loss = val_loss
+                        best_weights = self.model.w
+                    
+                    # Early stop
+                    if stop_counter >= 50:
+                        print("Stopped early at epoch: ", epoch)
+                        self.model.w = best_weights
+                        stop_flag = True
+                        break
+
                 global_step += 1
+
+            if stop_flag:
+                break
+
+
         return train_history, val_history
