@@ -26,7 +26,7 @@ files_to_include = {
     "task4c": [".py"],
     "trainer": [".py"],
     "utils": [".py"],
-    "mnist.py": [".py"]
+    "mnist": [".py"]
 
 }
 zipfile_path = "assignment_code.zip"
@@ -45,7 +45,7 @@ def select_file(filename, extension):
 files_added = []
 with zipfile.ZipFile(zipfile_path, "w") as fp:
     for filename, extensions in files_to_include.items():
-        filepath = select_file(filename, extensions)
+        filepath = select_file("./assignment2/"+filename, extensions)
         assert os.path.isfile(filepath), \
             f"Did not find path: {filepath}"
         fp.write(filepath)
