@@ -22,6 +22,8 @@ def compute_loss_and_accuracy(
     """
     average_loss = 0
     accuracy = 0
+    N = 0
+
     # TODO: Implement this function (Task  2a)
     with torch.no_grad():
         for (X_batch, Y_batch) in dataloader:
@@ -31,9 +33,25 @@ def compute_loss_and_accuracy(
             # Forward pass the images through our model
             output_probs = model(X_batch)
 
-            # Compute Loss and Accuracy
+            # Compute Loss
+            current_loss = loss_criterion(output_probs, Y_batch)
+            current_batch_size = X_batch.size(0)
+            average_loss += current_loss.item() * current_batch_size
 
-            # Predicted class is the max index over the column dimension
+            # Compute Accuracy
+            _, output_classes = torch.max(output_probs, 1)
+            n_correct = (output_classes == Y_batch).sum().item()
+            accuracy += n_correct
+
+            # Update number of samples
+            N += current_batch_size
+        
+        # Take average
+        average_loss /= N
+        accuracy /= N
+
+
+    # Predicted class is the max index over the column dimension
     return average_loss, accuracy
 
 
