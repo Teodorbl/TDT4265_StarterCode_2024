@@ -142,7 +142,13 @@ def main():
     dataloaders = load_cifar10(batch_size)
     model = ExampleModel(image_channels=3, num_classes=10)
     trainer = Trainer(
-        batch_size, learning_rate, early_stop_count, epochs, model, dataloaders
+        batch_size,
+        learning_rate,
+        early_stop_count,
+        epochs,
+        model,
+        dataloaders,
+        opt = "SGD"
     )
     trainer.train()
     create_plots(trainer, "task2")

@@ -1,5 +1,7 @@
 from torchvision import transforms, datasets
+from torchvision.transforms import v2
 from torch.utils.data.sampler import SubsetRandomSampler
+from torch.utils.data import ConcatDataset
 import torch
 import typing
 import numpy as np
@@ -23,8 +25,15 @@ def load_cifar10(batch_size: int, validation_fraction: float = 0.1
     # validation!
     transform_train = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize(mean, std),
+        transforms.Normalize(mean, std)
     ])
+
+    transform_train_augmented = transforms.Compose([
+        transforms.RandomResizedCrop(size=(32, 32), scale=(0.8, 1.0), ratio=(1, 1)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean, std)
+    ])
+
     transform_test = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize(mean, std)
@@ -33,14 +42,22 @@ def load_cifar10(batch_size: int, validation_fraction: float = 0.1
                                   train=True,
                                   download=True,
                                   transform=transform_train)
+    
+    data_train_augmented = datasets.CIFAR10(get_data_dir(),
+                                  train=True,
+                                  download=True,
+                                  transform=transform_train_augmented)
 
     data_test = datasets.CIFAR10(get_data_dir(),
                                  train=False,
                                  download=True,
                                  transform=transform_test)
+    
+    data_train_combined = ConcatDataset([data_train, data_train_augmented])
 
-    indices = list(range(len(data_train)))
-    split_idx = int(np.floor(validation_fraction * len(data_train)))
+    indices = list(range(len(data_train_combined)))
+    print("Number of indices: ", len(indices))
+    split_idx = int(np.floor(validation_fraction * len(data_train_combined)))
 
     val_indices = np.random.choice(indices, size=split_idx, replace=False)
     train_indices = list(set(indices) - set(val_indices))
@@ -48,7 +65,7 @@ def load_cifar10(batch_size: int, validation_fraction: float = 0.1
     train_sampler = SubsetRandomSampler(train_indices)
     validation_sampler = SubsetRandomSampler(val_indices)
 
-    dataloader_train = torch.utils.data.DataLoader(data_train,
+    dataloader_train = torch.utils.data.DataLoader(data_train_combined,
                                                    sampler=train_sampler,
                                                    batch_size=batch_size,
                                                    num_workers=2,
