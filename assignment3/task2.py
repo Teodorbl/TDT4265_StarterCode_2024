@@ -1,3 +1,4 @@
+import sys
 import pathlib
 import matplotlib.pyplot as plt
 import utils
@@ -62,15 +63,10 @@ class ExampleModel(nn.Module):
             )
         )
         # The output of feature_extractor will be [batch_size, num_filters, 16, 16] 4,4?
-
-        self.num_output_features = 32 * 32 * 32
-
+        #self.num_output_features = 32 * 32 * 32
         # Initialize our last fully connected layer
-
         # Inputs all extracted features from the convolutional layers
-
         # Outputs num_classes predictions, 1 for each class.
-
         # There is no need for softmax activation function, as this is
         # included with nn.CrossEntropyLoss
 
@@ -90,6 +86,7 @@ class ExampleModel(nn.Module):
                 out_features=num_classes
             )
         )
+        self.flag = True
 
     def forward(self, x):
         """
@@ -99,12 +96,15 @@ class ExampleModel(nn.Module):
         """
         # TODO: Implement this function (Task  2a)
         batch_size = x.shape[0]
-        out = x
+        CNN_out = self.feature_extractor(x)
+        out = self.classifier(CNN_out)
+
         expected_shape = (batch_size, self.num_classes)
         assert out.shape == (
             batch_size,
             self.num_classes,
         ), f"Expected output of forward pass to be: {expected_shape}, but got: {out.shape}"
+        
         return out
 
 
