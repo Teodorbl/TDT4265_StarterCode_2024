@@ -18,15 +18,16 @@ class ExampleModel(nn.Module):
         super().__init__()
         # TODO: Implement this function (Task  2a)
         self.num_classes = num_classes
+        self.num_filters = 64
         # Define the convolutional layers
         self.feature_extractor = nn.Sequential(
             # Layer 1
             nn.Conv2d(
                 in_channels=image_channels,
-                out_channels=32,
-                kernel_size=5,
+                out_channels=self.num_filters,
+                kernel_size=3,
                 stride=1,
-                padding=2
+                padding=1
             ),
             nn.ReLU(),
             nn.MaxPool2d(
@@ -36,11 +37,11 @@ class ExampleModel(nn.Module):
             
             # Layer 2
             nn.Conv2d(
-                in_channels=32,
-                out_channels=64,
-                kernel_size=5,
+                in_channels=self.num_filters,
+                out_channels=self.num_filters*2,
+                kernel_size=3,
                 stride=1,
-                padding=2
+                padding=1
             ),
             nn.ReLU(),
             nn.MaxPool2d(
@@ -50,11 +51,11 @@ class ExampleModel(nn.Module):
 
             # Layer 3
             nn.Conv2d(
-                in_channels=64,
-                out_channels=128,
-                kernel_size=5,
+                in_channels=self.num_filters*2,
+                out_channels=self.num_filters*4,
+                kernel_size=3,
                 stride=1,
-                padding=2
+                padding=1
             ),
             nn.ReLU(),
             nn.MaxPool2d(
@@ -75,7 +76,7 @@ class ExampleModel(nn.Module):
 
             # Layer 4
             nn.Linear(
-                in_features=2048,
+                in_features=4*4* self.num_filters*4,
                 out_features=64
             ),
             nn.ReLU(),
