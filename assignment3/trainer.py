@@ -64,7 +64,8 @@ class Trainer:
                  epochs: int,
                  model: torch.nn.Module,
                  dataloaders: typing.List[torch.utils.data.DataLoader],
-                 opt = "SGD"
+                 opt = "SGD",
+                 weight_decay = 0
                  ):
         """
             Initialize our trainer class.
@@ -84,9 +85,9 @@ class Trainer:
 
         # Define our optimizer. SGD = Stochastich Gradient Descent
         if opt == "SGD":
-            self.optimizer = torch.optim.SGD(self.model.parameters(), self.learning_rate)
+            self.optimizer = torch.optim.SGD(self.model.parameters(), self.learning_rate, weight_decay=weight_decay)
         elif opt == "Adam":
-            self.optimizer = torch.optim.Adam(self.model.parameters(), self.learning_rate/5)
+            self.optimizer = torch.optim.Adam(self.model.parameters(), self.learning_rate, weight_decay=weight_decay)
         elif opt == "RMSProp":
             self.optimizer = torch.optim.RMSprop(self.model.parameters(), self.learning_rate)
 
