@@ -21,26 +21,26 @@ def get_data_dir():
     return "data/cifar10"
 
 
-def load_cifar10(batch_size: int, validation_fraction: float = 0.1
+def load_cifar10(batch_size: int, validation_fraction: float = 0.1, shrink: bool = False
                  ) -> typing.List[torch.utils.data.DataLoader]:
     # Note that transform train will apply the same transform for
     # validation!
     transform_train = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Resize((224, 224)),
+        transforms.Resize((112, 112)) if shrink else transforms.Resize((224, 224)),
         transforms.Normalize(mean, std),
     ])
 
     transform_train_augmented = transforms.Compose([
         transforms.RandomResizedCrop(size=(32, 32), scale=(0.8, 1.0), ratio=(1, 1)),
         transforms.ToTensor(),
-        transforms.Resize((224, 224)),
+        transforms.Resize((112, 112)) if shrink else transforms.Resize((224, 224)),
         transforms.Normalize(mean, std),
     ])
 
     transform_test = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Resize((224, 224)),
+        transforms.Resize((112, 112)) if shrink else transforms.Resize((224, 224)),
         transforms.Normalize(mean, std),
     ])
     data_train = datasets.CIFAR10(get_data_dir(),
