@@ -27,21 +27,21 @@ def load_cifar10(batch_size: int, validation_fraction: float = 0.1
     # validation!
     transform_train = transforms.Compose([
         transforms.ToTensor(),
+        transforms.Resize((224, 224)),
         transforms.Normalize(mean, std),
-        transforms.Resize((224, 224))
     ])
 
     transform_train_augmented = transforms.Compose([
         transforms.RandomResizedCrop(size=(32, 32), scale=(0.8, 1.0), ratio=(1, 1)),
         transforms.ToTensor(),
-        transforms.Normalize(mean, std),
         transforms.Resize((224, 224))
+        transforms.Normalize(mean, std),
     ])
 
     transform_test = transforms.Compose([
         transforms.ToTensor(),
+        transforms.Resize((224, 224)),
         transforms.Normalize(mean, std),
-        transforms.Resize((224, 224))
     ])
     data_train = datasets.CIFAR10(get_data_dir(),
                                   train=True,
