@@ -72,6 +72,5 @@ def main():
     trainer.train()
     create_plots(trainer, "task4")
 
-
 if __name__ == "__main__":
     main()

@@ -25,6 +25,7 @@ def load_cifar10(batch_size: int, validation_fraction: float = 0.1, shrink: bool
                  ) -> typing.List[torch.utils.data.DataLoader]:
     # Note that transform train will apply the same transform for
     # validation!
+
     transform_train = transforms.Compose([
         transforms.ToTensor(),
         transforms.Resize((112, 112)) if shrink else transforms.Resize((224, 224)),
