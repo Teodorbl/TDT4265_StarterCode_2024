@@ -52,13 +52,13 @@ def main():
     # You can try to change this and check if you still get the same result!
     utils.set_seed(0)
     print(f"Using device: {utils.get_device()}")
-    epochs = 10
-    batch_size = 64
-    learning_rate = 0.0005
+    epochs = 6
+    batch_size = 32
+    learning_rate = 5e-4
     early_stop_count = 4
     weight_decay = 0.001
     dataloaders = load_cifar10(batch_size)
-    model = Model(image_channels=3, num_classes=10)
+    model = Model()
     trainer = Trainer(
         batch_size,
         learning_rate,
