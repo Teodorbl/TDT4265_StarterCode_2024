@@ -34,7 +34,7 @@ def load_cifar10(batch_size: int, validation_fraction: float = 0.1
     transform_train_augmented = transforms.Compose([
         transforms.RandomResizedCrop(size=(32, 32), scale=(0.8, 1.0), ratio=(1, 1)),
         transforms.ToTensor(),
-        transforms.Resize((224, 224))
+        transforms.Resize((224, 224)),
         transforms.Normalize(mean, std),
     ])
 
