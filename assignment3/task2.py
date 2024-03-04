@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import utils
 from torch import nn
 from dataloaders import load_cifar10
-from trainer import Trainer
+from trainer import Trainer, compute_loss_and_accuracy
 
 
 class ExampleModel(nn.Module):
@@ -241,7 +241,15 @@ def main():
         weight_decay = weight_decay
     )
     trainer.train()
-    create_plots(trainer, "task2")
+    create_plots(trainer, "task3_test_dataset")
+
+    # Test accuracy
+    test_loss, test_acc = compute_loss_and_accuracy(
+        trainer.dataloader_test, trainer.model, trainer.loss_criterion
+    )
+    print("Test loss: ", test_loss)
+    print("Test accuracy: ", test_acc)
+
 
 
 if __name__ == "__main__":
