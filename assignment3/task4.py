@@ -5,7 +5,7 @@ import utils
 import torchvision
 from torch import nn
 from dataloaders import load_cifar10
-from trainer import Trainer
+from trainer import Trainer, compute_loss_and_accuracy
 
 class Model(nn.Module):
     def __init__(self):
@@ -45,8 +45,6 @@ def create_plots(trainer: Trainer, name: str):
     plt.show()
 
 
-
-
 def main():
     # Set the random generator seed (parameters, shuffling etc).
     # You can try to change this and check if you still get the same result!
@@ -71,6 +69,13 @@ def main():
     )
     trainer.train()
     create_plots(trainer, "task4")
+
+    # Test accuracy
+    test_loss, test_acc = compute_loss_and_accuracy(
+        trainer.dataloader_test, trainer.model, trainer.loss_criterion
+    )
+    print("Test loss: ", test_loss)
+    print("Test accuracy: ", test_acc)
 
 if __name__ == "__main__":
     main()
