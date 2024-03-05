@@ -19,78 +19,102 @@ class ExampleModel(nn.Module):
         # TODO: Implement this function (Task  2a)
         self.num_classes = num_classes
         self.num_filters = 32
-        out_units = 4*4 * self.num_filters*4
         # Define the convolutional layers
         self.feature_extractor = nn.Sequential(
-            # Layer 1
+            # Layer 1 conv
             nn.Conv2d(
                 in_channels=image_channels,
                 out_channels=self.num_filters,
-                kernel_size=5,
+                kernel_size=3,
                 stride=1,
-                padding=2
+                padding=1
             ), # Out: [32, 32]
             nn.ReLU(),
+            nn.BatchNorm2d(self.num_filters),
 
-            nn.MaxPool2d(
-                kernel_size=2,
-                stride=2
-            ), # Out: [16, 16]
-            
-            # Layer 2
+            # Layer 1 desample
             nn.Conv2d(
                 in_channels=self.num_filters,
-                out_channels=self.num_filters*2,
-                kernel_size=5,
-                stride=1,
-                padding=2
+                out_channels=self.num_filters,
+                kernel_size=3,
+                stride=2,
+                padding=1
             ), # Out: [16, 16]
             nn.ReLU(),
-
-            nn.MaxPool2d(
-                kernel_size=2,
-                stride=2
-            ), # Out: [8, 8]
-
-            # Layer 3
+            nn.BatchNorm2d(self.num_filters),
+            
+            # Layer 2 conv
             nn.Conv2d(
-                in_channels=self.num_filters*2,
+                in_channels=self.num_filters,
                 out_channels=self.num_filters*4,
-                kernel_size=5,
+                kernel_size=3,
                 stride=1,
-                padding=2
+                padding=1
+            ), # Out: [16, 16]
+            nn.ReLU(),
+            nn.BatchNorm2d(self.num_filters*4),
+
+            # Layer 2 desample
+            nn.Conv2d(
+                in_channels=self.num_filters*4,
+                out_channels=self.num_filters*4,
+                kernel_size=3,
+                stride=2,
+                padding=1
             ), # Out: [8, 8]
             nn.ReLU(),
+            nn.BatchNorm2d(self.num_filters*4),
 
-            nn.MaxPool2d(
-                kernel_size=2,
-                stride=2
-            ) # Out: [4, 4]
+            # Layer 3 conv
+            nn.Conv2d(
+                in_channels=self.num_filters*4,
+                out_channels=self.num_filters*8,
+                kernel_size=3,
+                stride=1,
+                padding=1
+            ), # Out: [8, 8]
+            nn.ReLU(),
+            nn.BatchNorm2d(self.num_filters*8),
+
+            # Layer 3 desample
+            nn.Conv2d(
+                in_channels=self.num_filters*8,
+                out_channels=self.num_filters*8,
+                kernel_size=3,
+                stride=2,
+                padding=1
+            ), # Out: [4, 4]
+            nn.ReLU(),
+            nn.BatchNorm2d(self.num_filters*8)
         )
+
+        CNN_out_units = 4*4 * self.num_filters*8
+        l1_units = int(CNN_out_units//2)
+        l2_units = int(l1_units//2)
         
-
-        # The output of feature_extractor will be [batch_size, num_filters, 16, 16] 4,4?
-        #self.num_output_features = 32 * 32 * 32
-        # Initialize our last fully connected layer
-        # Inputs all extracted features from the convolutional layers
-        # Outputs num_classes predictions, 1 for each class.
-        # There is no need for softmax activation function, as this is
-        # included with nn.CrossEntropyLoss
-
         self.classifier = nn.Sequential(
             nn.Flatten(),
 
             # Layer 1
             nn.Linear(
-                in_features=out_units,
-                out_features=64
+                in_features=CNN_out_units,
+                out_features=l1_units
             ),
             nn.ReLU(),
+            nn.BatchNorm1d(l1_units),
 
-            # Layer 2
+            # Layer 1
             nn.Linear(
-                in_features=64,
-                out_features=10
+                in_features=l1_units,
+                out_features=l2_units
+            ),
+            nn.ReLU(),
+            nn.BatchNorm1d(l2_units),
+
+            # Layer 1
+            nn.Linear(
+                in_features=l2_units,
+                out_features=num_classes
             )
         )
 
@@ -139,11 +163,11 @@ def main():
     utils.set_seed(0)
     print(f"Using device: {utils.get_device()}")
     epochs = 10
-    batch_size = 64
+    batch_size = 32
     learning_rate = 0.05
-    early_stop_count = 4
+    early_stop_count = 10
     opt = "SGD"
-    weight_decay = 0.000
+    weight_decay = 0.001
     dataloaders = load_cifar10(batch_size)
     model = ExampleModel(image_channels=3, num_classes=10)
     trainer = Trainer(

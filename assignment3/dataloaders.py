@@ -64,7 +64,7 @@ def load_cifar10(batch_size: int, validation_fraction: float = 0.1, shrink: bool
     data_train_combined = ConcatDataset([data_train, data_train_augmented])
 
     indices = list(range(len(data_train_combined)))
-    print("Number of indices: ", len(indices))
+    # print("Number of indices: ", len(indices))
     split_idx = int(np.floor(validation_fraction * len(data_train_combined)))
 
     val_indices = np.random.choice(indices, size=split_idx, replace=False)
