@@ -3,7 +3,7 @@ import pathlib
 import matplotlib.pyplot as plt
 import utils
 from torch import nn
-from dataloaders import load_cifar10
+from dataloaders2 import load_cifar10
 from trainer import Trainer, compute_loss_and_accuracy
 
 
@@ -29,8 +29,8 @@ class ExampleModel(nn.Module):
                 stride=1,
                 padding=1
             ), # Out: [32, 32]
-            nn.ReLU(),
             nn.BatchNorm2d(self.num_filters),
+            nn.ReLU(),
 
             # Layer 1 desample
             nn.Conv2d(
@@ -40,8 +40,8 @@ class ExampleModel(nn.Module):
                 stride=2,
                 padding=1
             ), # Out: [16, 16]
-            nn.ReLU(),
             nn.BatchNorm2d(self.num_filters),
+            nn.ReLU(),
             
             # Layer 2 conv
             nn.Conv2d(
@@ -51,8 +51,8 @@ class ExampleModel(nn.Module):
                 stride=1,
                 padding=1
             ), # Out: [16, 16]
-            nn.ReLU(),
             nn.BatchNorm2d(self.num_filters*4),
+            nn.ReLU(),
 
             # Layer 2 desample
             nn.Conv2d(
@@ -62,8 +62,8 @@ class ExampleModel(nn.Module):
                 stride=2,
                 padding=1
             ), # Out: [8, 8]
-            nn.ReLU(),
             nn.BatchNorm2d(self.num_filters*4),
+            nn.ReLU(),
 
             # Layer 3 conv
             nn.Conv2d(
@@ -73,8 +73,8 @@ class ExampleModel(nn.Module):
                 stride=1,
                 padding=1
             ), # Out: [8, 8]
-            nn.ReLU(),
             nn.BatchNorm2d(self.num_filters*8),
+            nn.ReLU(),
 
             # Layer 3 desample
             nn.Conv2d(
@@ -84,8 +84,8 @@ class ExampleModel(nn.Module):
                 stride=2,
                 padding=1
             ), # Out: [4, 4]
-            nn.ReLU(),
-            nn.BatchNorm2d(self.num_filters*8)
+            nn.BatchNorm2d(self.num_filters*8),
+            nn.ReLU()
         )
 
         CNN_out_units = 4*4 * self.num_filters*8
@@ -100,16 +100,18 @@ class ExampleModel(nn.Module):
                 in_features=CNN_out_units,
                 out_features=l1_units
             ),
-            nn.ReLU(),
             nn.BatchNorm1d(l1_units),
+            nn.ReLU(),
+            nn.Dropout(0.3),
 
             # Layer 1
             nn.Linear(
                 in_features=l1_units,
                 out_features=l2_units
             ),
-            nn.ReLU(),
             nn.BatchNorm1d(l2_units),
+            nn.ReLU(),
+            nn.Dropout(0.2),
 
             # Layer 1
             nn.Linear(
@@ -164,10 +166,10 @@ def main():
     print(f"Using device: {utils.get_device()}")
     epochs = 10
     batch_size = 32
-    learning_rate = 0.05
+    learning_rate = 0.001
     early_stop_count = 10
-    opt = "SGD"
-    weight_decay = 0.001
+    opt = "Adam"
+    weight_decay = 0.0001
     dataloaders = load_cifar10(batch_size)
     model = ExampleModel(image_channels=3, num_classes=10)
     trainer = Trainer(
@@ -182,6 +184,8 @@ def main():
     )
     trainer.train()
     create_plots(trainer, "task2a_simple")
+
+    trainer.model.eval()
 
     # Train accuracy
     train_loss, train_acc = compute_loss_and_accuracy(
@@ -203,6 +207,8 @@ def main():
     )
     print("Test loss: ", test_loss)
     print("Test accuracy: ", test_acc)
+
+    trainer.model.train()
 
 
 

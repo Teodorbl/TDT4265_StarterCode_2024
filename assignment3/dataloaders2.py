@@ -1,7 +1,7 @@
 from torchvision import transforms, datasets
 from torchvision.transforms import v2
 from torch.utils.data.sampler import SubsetRandomSampler
-from torch.utils.data import ConcatDataset
+from torch.utils.data import ConcatDataset, Subset
 import torch
 import typing
 import numpy as np
@@ -57,13 +57,19 @@ def load_cifar10(batch_size: int, validation_fraction: float = 0.1, shrink: bool
                                   train=True,
                                   download=True,
                                   transform=transform_train_augmented)
+    
+    # Remove some of the augmented samples to match the number of original train samples
+    n_aug_samples = len(data_train_augmented)
+    n_aug_keep = int(n_aug_samples * (1 - validation_fraction))
+    aug_indices = np.random.choice(n_aug_samples, n_aug_keep, replace=False)
+    data_train_augmented = Subset(data_train_augmented, aug_indices)
 
     data_test = datasets.CIFAR10(get_data_dir(),
                                  train=False,
                                  download=True,
                                  transform=transform_test)
     
-    # Combining original and augmented training samples. Total n_samples = 2 * 50 000
+    # Combining original and augmented training samples. Total n_samples = 50 000 + 50 000 * 0.9
     data_train_combined = ConcatDataset([data_train, data_train_augmented])
 
     indices_original = list(range(len(data_train)))
