@@ -124,22 +124,12 @@ class Trainer:
         self.validation_history["accuracy"][self.global_step] = validation_acc
         used_time = time.time() - self.start_time
 
-        # To be removed:
-        test_loss, test_acc = compute_loss_and_accuracy(
-            self.dataloader_test, self.model, self.loss_criterion
-        )
-
         print(
             f"Epoch: {self.epoch:>1}",
             f"Batches per seconds: {self.global_step / used_time:.2f}",
             f"Global step: {self.global_step:>6}",
             f"Validation Loss: {validation_loss:.2f}",
-            f"Validation Accuracy: {validation_acc:.3f}",
-
-            # To be removed:
-            f"Test Loss: {test_loss:.2f}",
-            f"Test Accuracy: {test_acc:.3f}",
-            
+            f"Validation Accuracy: {validation_acc:.3f}",            
             sep=", ")
         self.model.train()
 

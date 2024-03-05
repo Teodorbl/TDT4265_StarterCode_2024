@@ -3,7 +3,7 @@ import pathlib
 import matplotlib.pyplot as plt
 import utils
 from torch import nn
-from dataloaders2 import load_cifar10
+from dataloaders import load_cifar10
 from trainer import Trainer, compute_loss_and_accuracy
 
 
@@ -167,7 +167,7 @@ def main():
     epochs = 10
     batch_size = 32
     learning_rate = 0.001
-    early_stop_count = 10
+    early_stop_count = 20
     opt = "Adam"
     weight_decay = 0.0001
     dataloaders = load_cifar10(batch_size)
@@ -183,8 +183,12 @@ def main():
         weight_decay = weight_decay
     )
     trainer.train()
-    create_plots(trainer, "task2a_simple")
+    create_plots(trainer, "task3_adam4")
 
+    # Load best model
+    trainer.load_best_model()
+
+    # Compute performance metrics
     trainer.model.eval()
 
     # Train accuracy

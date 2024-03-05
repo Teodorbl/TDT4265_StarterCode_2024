@@ -1,7 +1,7 @@
 from torchvision import transforms, datasets
 from torchvision.transforms import v2
 from torch.utils.data.sampler import SubsetRandomSampler
-from torch.utils.data import ConcatDataset
+from torch.utils.data import ConcatDataset, Subset
 import torch
 import typing
 import numpy as np
@@ -12,12 +12,13 @@ np.random.seed(0)
 # mean = (0.5, 0.5, 0.5)
 # std = (.25, .25, .25)
 
+# CIFAR-10 actual:
 mean = (0.4914, 0.4822, 0.4465)
 std = (0.2023, 0.1994, 0.2010)
 
 # Task 4:
-# mean= (0.485, 0.456, 0.406)
-# std= (0.229, 0.224, 0.225)
+# mean = (0.485, 0.456, 0.406)
+# std = (0.229, 0.224, 0.225)
 
 def get_data_dir():
     server_dir = pathlib.Path("/work/datasets/cifar10")
@@ -37,7 +38,8 @@ def load_cifar10(batch_size: int, validation_fraction: float = 0.1, shrink: bool
     ])
 
     transform_train_augmented = transforms.Compose([
-        transforms.RandomResizedCrop(size=(32, 32), scale=(0.8, 1.0), ratio=(1, 1), antialias=True),
+        # transforms.RandomResizedCrop(size=(32, 32), scale=(0.8, 1.0), ratio=(1, 1), antialias=True),
+        transforms.RandomHorizontalFlip(1.0), 
         transforms.ToTensor(),
         transforms.Normalize(mean, std),
     ])
@@ -55,19 +57,28 @@ def load_cifar10(batch_size: int, validation_fraction: float = 0.1, shrink: bool
                                   train=True,
                                   download=True,
                                   transform=transform_train_augmented)
+    
+    # Remove some of the augmented samples to match the number of original train samples
+    n_aug_samples = len(data_train_augmented)
+    n_aug_keep = int(n_aug_samples * (1 - validation_fraction))
+    aug_indices = np.random.choice(n_aug_samples, n_aug_keep, replace=False)
+    data_train_augmented = Subset(data_train_augmented, aug_indices)
 
     data_test = datasets.CIFAR10(get_data_dir(),
                                  train=False,
                                  download=True,
                                  transform=transform_test)
     
+    # Combining original and augmented training samples. Total n_samples = 50 000 + 50 000 * 0.9
     data_train_combined = ConcatDataset([data_train, data_train_augmented])
 
+    indices_original = list(range(len(data_train)))
     indices = list(range(len(data_train_combined)))
     # print("Number of indices: ", len(indices))
-    split_idx = int(np.floor(validation_fraction * len(data_train_combined)))
+    split_idx = int(np.floor(validation_fraction * len(data_train)))
 
-    val_indices = np.random.choice(indices, size=split_idx, replace=False)
+    # Validation indices are only pulled from the original 50 000
+    val_indices = np.random.choice(indices_original, size=split_idx, replace=False)
     train_indices = list(set(indices) - set(val_indices))
 
     train_sampler = SubsetRandomSampler(train_indices)
@@ -79,7 +90,7 @@ def load_cifar10(batch_size: int, validation_fraction: float = 0.1, shrink: bool
                                                    num_workers=2,
                                                    drop_last=True)
 
-    dataloader_val = torch.utils.data.DataLoader(data_train_combined,
+    dataloader_val = torch.utils.data.DataLoader(data_train,
                                                  sampler=validation_sampler,
                                                  batch_size=batch_size,
                                                  num_workers=2)
