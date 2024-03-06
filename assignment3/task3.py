@@ -104,7 +104,7 @@ class ExampleModel(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.3),
 
-            # Layer 1
+            # Layer 2
             nn.Linear(
                 in_features=l1_units,
                 out_features=l2_units
@@ -113,7 +113,7 @@ class ExampleModel(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.2),
 
-            # Layer 1
+            # Layer 3
             nn.Linear(
                 in_features=l2_units,
                 out_features=num_classes
