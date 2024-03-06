@@ -21,6 +21,8 @@ def query(question, options):
 # If you create other files, edit this list to include them in the .zip file.
 files_to_include = {
     "task2": [".py"],
+    "task3": [".py"],
+    "task4": [".py"],
     "task2_train": [".ipynb"],
     "trainer": [".py"],
     "utils": [".py"],
@@ -42,7 +44,7 @@ def select_file(filename, extension):
 files_added = []
 with zipfile.ZipFile(zipfile_path, "w") as fp:
     for filename, extensions in files_to_include.items():
-        filepath = select_file(filename, extensions)
+        filepath = select_file("./assignment3/"+filename, extensions)
         assert os.path.isfile(filepath),\
             f"Did not find path: {filepath}"
         fp.write(filepath)
