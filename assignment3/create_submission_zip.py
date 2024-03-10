@@ -50,6 +50,8 @@ with zipfile.ZipFile(zipfile_path, "w") as fp:
         fp.write(filepath)
         files_added.append(filepath)
 
+
+
 print("-"*80)
 print("Files added to zip:")
 print("\t" + "\n\t".join(files_added))

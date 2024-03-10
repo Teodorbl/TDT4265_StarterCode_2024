@@ -13,5 +13,8 @@ dependencies:
       - matplotlib==3.8.2
       - scikit-image==0.22.0
       - notebook
+      - lightning
+      - wandb
+      - munch
       
 
